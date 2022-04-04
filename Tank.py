@@ -3,14 +3,13 @@ import math
 from utils import blit_rotate_center
 
 
-
 class Tank(object):
-    def __init__(self, game, screen, max_vel):
-        self.game= game
-        self.size = self.game.screen.get_size()
-        self.screen = screen
 
-        self.playerImg = pygame.image.load('tank.png')
+    def __init__(self, game, max_vel):
+        self.game = game
+        self.size = self.game.screen.get_size()
+
+        self.player_img = pygame.image.load('tank.png')
 
         self.max_vel = max_vel
         self.velocity = 0
@@ -19,9 +18,9 @@ class Tank(object):
         self.x, self.y = self.size[0] / 2, self.size[1] * (8 / 10)
         self.acceleration = 0.025
 
+        self.bullet_status = "ready"
 
     def tick(self):
-        # Input
         pressed = pygame.key.get_pressed()
         moved = False
 
@@ -32,6 +31,12 @@ class Tank(object):
         if pressed[pygame.K_w]:
             moved = True
             self.move_forward()
+        if pressed[pygame.K_UP]:
+            self.bullet_status = "fire"
+            self.bullet_x = self.x + 8
+            self.bullet_y = self.y + 8
+            self.bullet_angle = self.angle
+        # todo create change bullet_status
 
         if not moved:
             self.reduce_speed()
@@ -58,9 +63,8 @@ class Tank(object):
         self.y -= vertical
         self.x -= horizontal
 
-
     def draw(self):
-        blit_rotate_center(self.screen, self.playerImg, (self.x, self.y), self.angle)
+        blit_rotate_center(self.game.screen, self.player_img, (self.x, self.y), self.angle)
 
         # Adding Boundaries
         if self.x <= 0:
